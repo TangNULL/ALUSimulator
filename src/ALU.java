@@ -15,60 +15,40 @@ public class ALU {
 	 */
 	public static String integerRepresentation (String number, int length) {
 		// TODO YOUR CODE HERE.	
-		String str="";
-		if(number.substring(0,1).equals("-")){// 负数
+		boolean isNegative=false;
+		StringBuffer str=new StringBuffer();
+		int myNum = 0;
+		if(!number.startsWith("-")){
+			myNum=Integer.parseInt(number);
+		}
+		else if(number.startsWith("-")){
+			isNegative=true;
 			number=number.substring(1);
-			int myNum=Integer.parseInt(number);
-			char[] myChar=new char[length];
-			for(int i=length-2;i>=0;i--){
-				if((myNum&(1<<i))!=0){
-					myChar[length-1-i]='0';
-				}
-				if((myNum&(1<<i))==0){
-					myChar[length-1-i]='1';
-				}
-			}//取反的过程
-			myChar[0]='1';
-			if(myChar[length-1]=='0'){
-				myChar[length-1]=1;
-			}
-			
-			if(myChar[length-1]=='1'){
-				for(int i=length-1;i>=1;i--){
-				    if(myChar[i]=='1'){
-				    	myChar[i]='0';
-				    }
-				    else if(myChar[i]=='0'){
-				    	myChar[i]='1';
-				    	break;
-				    }
-			    }
-			
-			}	//加1的过程
-			for(int i=0;i<myChar.length;i++){
-				str=str+myChar[i];
-			}
+			myNum=(int) Math.pow(2, length)-Integer.parseInt(number);
 		}
 		
-		else{
-			int myNum=Integer.parseInt(number);
-			char[] myChar=new char[length];
-		
-			for(int i=length-2;i>=0;i--){
-				if((myNum&(1<<i))!=0){
-					myChar[length-1-i]='1';
-				}
-				if((myNum&(1<<i))==0){
-					myChar[length-1-i]='0';
-				}
+		while(myNum!=0){
+			int YU=myNum%2;
+			char Yu='/';
+			if(YU==0){
+				Yu='0';
 			}
-			myChar[0]='0';
-			for(int i=0;i<myChar.length;i++){
-				str=str+myChar[i];
+			else{
+				Yu='1';
 			}
-			
+			str.insert(0,Yu);
+			myNum=myNum/2;
 		}
-		return str;
+		while(str.length()<length){
+			if(isNegative==true){
+				str.insert(0, "1");
+		    }
+			else{
+				str.insert(0, "0");
+			}
+		}
+		String result=str.toString();
+		return result;
 	}
 	
 	/**
@@ -85,157 +65,152 @@ public class ALU {
 		// TODO YOUR CODE HERE.
 	
 		String result="0";
-		if(number.split("\\.").length>=2){
+		if(number.substring(1).equals("Inf")){
+			if(number.startsWith("-")){
+				result="1";
+			}
+			String E="1";
+			while(E.length()<eLength){
+				E+="1";
+			}
+			String S="0";
+			while(S.length()<sLength){
+				S+="0";
+			}
+			result=result+E+S;
+		}
+		else if(number.split("\\.").length>=2){
 			if(number.substring(0,1).equals("-")){
 				number=number.substring(1);
 				result="1";
 			}
 			String[] TwoString=number.split("\\.");
-			int Fore=Integer.parseInt(TwoString[0]);
-			String tempOne=Integer.toBinaryString(Fore);
-			char[] Onearray=tempOne.toCharArray();//得到小数点前的整数的二进制表示Onearray
-			////
-			String tempTwo="0"+"."+TwoString[1];
-			Double temptwo=Double.valueOf(tempTwo);//temptwo是小数
-			char[] Twoarray=new char[23];
-			int flag=0;
-			while(temptwo*2!=1&&flag<=22){
-				temptwo=temptwo*2;
-				if(temptwo==1){
-					Twoarray[flag]='1';
-					flag++;
+			
+			if(TwoString[0].equals("0")&&TwoString[1].equals("0")){
+				String E="0";
+				while(E.length()<eLength){
+					E+="0";
 				}
-				if(temptwo>1){
-					Twoarray[flag]='1';
-					temptwo=temptwo-1;
-					flag++;
+				String S="0";
+				while(S.length()<sLength){
+					S+="0";
 				}
-				else if(temptwo<1){
-					Twoarray[flag]='0';
-					flag++;
-				}
-			}
-			if(flag<22){
-				Twoarray[flag]='1';
-				flag++;
+				result=result+E+S;
 			}
 			
-			for(int i=flag;i<=22;i++){
-				Twoarray[i]='0';
-			}//得到小数的二进制表示Twoarray
-			//////
-			char[] FinalChar=new char[Onearray.length+23+1];
-			for(int i=0;i<Onearray.length;i++){
-				FinalChar[i]=Onearray[i];
-			}
-			FinalChar[Onearray.length]='.'; //移码前小数点的位置下标是  Onearray.length
-			for(int i=Onearray.length+1;i<Onearray.length+23+1;i++){
-				FinalChar[i]=Twoarray[i-(Onearray.length+1)];
-			}//已将number转成二进制表示并放在数组 FinalChar中
-			int count0=0;
-			for(int i=0;i<FinalChar.length;i++){
-				if(FinalChar[i]=='0'){
-					count0++;
+			else{
+				String Fore=Integer.toBinaryString(Integer.valueOf(TwoString[0]));//小数点前整数的二进制。
+				int OneInFore=0;//整数中最靠前的1的位置  0123456
+				boolean OneInForeExist=false;
+				if(!(TwoString[0].equals("0"))){
+					while(OneInFore<=Fore.length()-1){
+						if(Fore.charAt(OneInFore)=='1'){
+							OneInForeExist=true;
+							break;
+						}
+						else{
+							OneInFore++;
+						}
+					}
+					
 				}
-				if(FinalChar[i]=='1'){
-					break;
+				
+				double Back=Double.valueOf("0"+"."+TwoString[1]);//  小数部分 0.*******
+				StringBuffer Buffer=new StringBuffer();
+				if(OneInForeExist==true){//意味着要右规   尾数只需sLength位
+					int MOVE=Fore.length()-1-OneInFore;   //要右移的位数
+					if(MOVE>=(int)Math.pow(2, eLength-1)){// 你这个数太大啦 要进入Inf范围了
+						String E="1";
+						while(E.length()<eLength){
+							E+="1";
+						}
+						String S="0";
+						while(S.length()<sLength){
+							S+="0";
+						}
+						result=result+E+S;
+					}
+					else{//正常的右规情形
+						for(int i=0;i<sLength;i++){
+							if(Back*2>=1){
+								Buffer.append("1");
+								Back=Back*2-1;
+							}
+							else if(Back*2<1){
+								Back=Back*2;
+								Buffer.append("0");
+							}
+						}
+						String BackOfS=Buffer.toString();
+						String S=Fore.substring(OneInFore+1, Fore.length())+BackOfS;
+						S=S.substring(0, sLength);
+						int e=Fore.length()-(OneInFore+1);
+						e=e+(int)Math.pow(2, eLength-1)-1;//阶码
+						String E=Integer.toBinaryString(e);
+						while(E.length()<eLength){
+							E="0"+E;
+						}
+						E=E.substring(E.length()-eLength,E.length());
+						result=result+E+S;
+					}
+					
+				}
+				else{//说不定要左规 那岂不是很尴尬
+					int FirstOneInBack=0;// 小数中第一个出现的1的位置  0123456
+					Double temp=Back;
+					while(temp*2<1){
+						temp=temp*2;
+						FirstOneInBack++;
+					}// 所以需左移FirstOneInBack+1位   即需要 sLength+(FirstOneInBack+1)位的尾数
+					if(FirstOneInBack+1>=(int)Math.pow(2, eLength-1)){//  太小啦    进入非规格化数的范围了 
+						String E="0";
+						while(E.length()<eLength){
+							E+="0";
+						}
+						for(int i=0;i<sLength+(int)Math.pow(2, eLength-1)-2;i++){
+							if(Back*2>=1){
+								Buffer.append("1");
+								Back=Back*2-1;
+							}
+							else if(Back*2<1){
+								Back=Back*2;
+								Buffer.append("0");
+							}
+						}
+						String BackOfS=Buffer.toString();
+						String S=BackOfS.substring(BackOfS.length()-sLength,BackOfS.length());
+						result=result+E+S;
+					}
+					else{//  正常的左规情形。
+						for(int i=0;i<sLength+FirstOneInBack+1;i++){
+							if(Back*2>=1){
+								Buffer.append("1");
+								Back=Back*2-1;
+							}
+							else if(Back*2<1){
+								Back=Back*2;
+								Buffer.append("0");
+							}
+						}
+						String BackOfS=Buffer.toString();
+						String S=BackOfS.substring(BackOfS.length()-sLength,BackOfS.length());
+						int e=-(FirstOneInBack+1);
+						e=e+(int)Math.pow(2, eLength-1)-1;
+						String E=Integer.toBinaryString(e);
+						while(E.length()<eLength){
+							E="0"+E;
+						}
+						E=E.substring(E.length()-eLength,E.length());
+						result=result+E+S;
+					}
+					
 				}
 			}
-			int isOne=-1;
-			boolean Exist1=false;
-			for(int i=0;i<FinalChar.length;i++){
-				if(FinalChar[i]=='1'){
-					isOne=i;//找到1的位置了！
-					Exist1=true;
-					break;
-				}
-			}
-			int e=Onearray.length-isOne-1;
-			if(e>0&&Exist1==true){
-				e=Onearray.length-isOne-1+127;// 移码e+过127
-			}
-			
-			else if(e<0){
-				e=Onearray.length-isOne+127;
-			}
-			else if(count0==FinalChar.length-1){
-				e=0;
-			}
-			else if(e==0&&count0!=FinalChar.length-1){
-				e=127;
-			}
-			
-			String E=Integer.toBinaryString(e);
-			E="000000000000000000000000000"+E;
-			E=E.substring(E.length()-eLength,E.length());  //阶码的String为E
-			String s="";
-			for(int i=isOne+1;i<FinalChar.length;i++){
-				if(i== Onearray.length){
-					continue;
-				}
-				else{
-					s=s+FinalChar[i];
-				}
-			}
-			while(s.length()<sLength){
-				s=s+"0";
-			}
-			s=s.substring(0, sLength);
-					// 尾数的String为s
-			
-			result=result+E+s;
-			return result;
-		}  //end
 		
-		
-		else if(number.equals("0")){
-			for(int i=1;i<1+eLength+sLength;i++){
-				result=result+"0";
-			}
-			return result;
+			
+			
 		}
-		
-		else if(number.equals("+Inf")||number.equals("-Inf")){
-			String e="",s="";
-			
-			if(number.startsWith("+")){
-				for(int i=0;i<eLength;i++){
-					e=e+"1";
-				}
-				for(int i=0;i<sLength;i++){
-					s=s+"0";
-				}
-				result=result+e+s;
-			}
-			if(number.startsWith("-")){
-				result="1";
-				for(int i=0;i<eLength;i++){
-					e=e+"1";
-				}
-				for(int i=0;i<sLength;i++){
-					s=s+"0";
-				}
-				result=result+e+s;
-			}
-			return result;
-		}
-		
-		if(number.equals("NaN")){
-			String e="",s="";
-			for(int i=0;i<eLength;i++){
-				e=e+"1";
-			}
-			for(int i=0;i<sLength-1;i++){
-				s=s+"0";
-			}
-			s=s+"1";
-			result=result+e+s;
-			return result;
-		}
-		
-		else{
-			return null;
-		}
+		return result;	
 		
 	}
 
@@ -296,20 +271,28 @@ public class ALU {
 		int SisZero=Integer.valueOf(operand.substring(1+eLength),2);
 		int EisZero=Integer.valueOf(operand.substring(1, 1+eLength),2);
 		if(EisZero==0){//阶码全为0        非规格化数
-			String S=operand.substring(1+eLength);//尾数
-			char[] myS=S.toCharArray();
-			double valueS=0;
-			for(int i=0;i<myS.length;i++){
-				if(myS[i]=='1'){
-					valueS+=Math.pow(2, -(i+1));
-				}
+			if(SisZero==0){// 阶码尾数都为0
+				result="0.0";
 			}
-			valueS=valueS*Math.pow(2, -126);
-			result+=valueS;
+			else{
+				String S=operand.substring(1+eLength);//尾数
+				char[] myS=S.toCharArray();
+				double valueS=0;
+				for(int i=0;i<myS.length;i++){
+					if(myS[i]=='1'){
+						valueS+=Math.pow(2, -(i+1));
+					}
+				}
+				valueS=valueS*Math.pow(2, -(Math.pow(2, eLength-1)-2));
+				result+=valueS;
+			}
 		}//非规格化数结束
 		
-		if(EisZero==(Math.pow(2, eLength)-1)){//阶码全为1     
+		else if(EisZero==(Math.pow(2, eLength)-1)){//阶码全为1     
 			if(SisZero==0){// 尾数全为0   Inf
+				if(operand.startsWith("0")){
+					result="+";
+				}
 				result=result+"Inf";
 			}
 			else{// NaN
@@ -318,7 +301,7 @@ public class ALU {
 		}
 		
 		else{
-			int valueE=EisZero-127;
+			int valueE=EisZero-(int)Math.pow(2, eLength-1)+1;
 			String S=operand.substring(1+eLength);//尾数
 			char[] myS=S.toCharArray();
 			double valueS=1;
@@ -483,7 +466,7 @@ public class ALU {
 		String str=""+m+n;
 		return str;
 	}
-	
+
 	/**
 	 * 4位先行进位加法器。要求采用{@link #fullAdder(char, char, char) fullAdder}来实现<br/>
 	 * 例：claAdder("1001", "0001", '1')
@@ -498,13 +481,14 @@ public class ALU {
 		char[] Operand2=operand2.toCharArray();
 		char[] result=new char[4];
 		char myChar=c;
+		int one=-1,two=-1;
 		for(int i=3;i>=0;i--){
 			char char1=Operand1[i];
 			char char2=Operand2[i];
 			result[i]=fullAdder(char1,char2,myChar).charAt(1);
 			myChar=fullAdder(char1,char2,myChar).charAt(0);//进位
 		}
-		String str=myChar+String.valueOf(result);
+		String str=""+myChar+String.valueOf(result);
 		return str;
 	}
 
@@ -523,15 +507,23 @@ public class ALU {
 		// TODO YOUR CODE HERE.
 		char[] myChar=operand.toCharArray();
 		int Cin=0,Cout=0,k=1;
+		int one=-1,two=-1;
 		int[] sum=new int[myChar.length];
 		for(int i=myChar.length-1;i>=0;i--){
 			Cin=Cout;
 			sum[i]=(myChar[i]-48)^k^Cin;
 			Cout=((myChar[i]-48)&k)|(Cin&((myChar[i]-48)^k));
 			k=0;
+			if(i==1){
+				two=Cout;
+			}
+			if(i==0){
+				one=Cout;
+			}
 		}
+		int isOverFlow=one^two;
 		StringBuffer str=new StringBuffer();
-		str.append(""+Cout);
+		str.append(""+isOverFlow);
 		for(int i=0;i<sum.length;i++){
 			str.append(""+sum[i]);
 		}
@@ -574,6 +566,11 @@ public class ALU {
 			}
 		}
 		*/
+		char a=operand1.charAt(0);
+		char b=operand2.charAt(0);
+		
+		
+		
 		while(operand1.length()<length){
 			operand1=operand1.substring(0, 1)+operand1;
 		}
@@ -592,9 +589,40 @@ public class ALU {
 				result=claAdder(operand1.substring(length-((i+1)*4),length-(i*4)),operand2.substring(length-((i+1)*4),length-(i*4)),result.charAt(0))+result.substring(1);
 			}
 		}
+		char re=result.charAt(1);
+		if(a==b&&a!=re){
+			result="1"+result.substring(1);
+		}
+		else{
+			result="0"+result.substring(1);
+		}
 		return result;
 	}
 
+	public static String myAdderJinWei(String operand1, String operand2, int length){
+		
+		while(operand1.length()<length){
+			operand1=operand1.substring(0, 1)+operand1;
+		}
+		while(operand2.length()<length){
+			operand2=operand2.substring(0, 1)+operand2;
+		}
+		
+		//补全
+		String result="";
+		for(int i=0;i<length/4;i++){
+			if(i==0){
+				result=claAdder(operand1.substring(length-4,length),operand2.substring(length-4, length),'0');
+			}
+			//末四位相加得到一个进位  四位结果
+			else{
+				result=claAdder(operand1.substring(length-((i+1)*4),length-(i*4)),operand2.substring(length-((i+1)*4),length-(i*4)),result.charAt(0))+result.substring(1);
+			}
+		}
+		return result;
+
+	}
+	
 	/**
 	 * 整数加法，要求调用{@link #adder(String, String, char, int) adder}方法实现。<br/>
 
@@ -623,12 +651,10 @@ public class ALU {
 		String result="";
 		int op2=Integer.valueOf(integerTrueValue(operand2));
 		op2*=(-1);
-		String OP2=Integer.toBinaryString(op2);//OP2为减数的负数的补码
-		if(op2<0&&OP2.length()<length){
-			OP2="1"+OP2;
-		}
-		else if(op2>0&&OP2.length()<length){
-			OP2="0"+OP2;
+		String OP2=integerRepresentation(""+op2,length);//OP2为减数的负数的补码
+		char prefix=operand1.charAt(0);
+		while(operand1.length()<length){
+			operand1=prefix+operand1;
 		}
 		result=adder(operand1,OP2,'0',length);
 		return result;
@@ -644,7 +670,8 @@ public class ALU {
 	 */
 	public static String integerMultiplication (String operand1, String operand2, int length) {
 		// TODO YOUR CODE HERE.
-		
+		char a=operand1.charAt(0);
+		char b=operand2.charAt(0);
 		while(operand1.length()<length){
 			operand1=operand1.substring(0, 1)+operand1;
 		}
@@ -652,7 +679,10 @@ public class ALU {
 			operand2=operand2.substring(0, 1)+operand2;
 		}
 		//补全
-		String result="0000";
+		String result="00";
+		while(result.length()<=length){
+			result=result+"0";
+		}
 		char[] OP=operand1.toCharArray();
 		for(int i=OP.length-1;i>=0;i--){
 			if(OP[i]=='1'){
@@ -660,10 +690,20 @@ public class ALU {
 					result="0"+operand2;
 				}
 				else{
-					result=adder(leftShift(operand2,OP.length-1-i),result.substring(1),result.charAt(0),length);
+					result=adder(leftShift(operand2,OP.length-1-i),result.substring(1),'0',length);
 				}
 			}
+			else{
+				result=adder(result.substring(1),"0",'0',length);
+			}
 			
+		}
+		char re=result.charAt(1);
+		if((a!=b&&re=='0')||(a==b&&re=='1')){
+			result="1"+result.substring(1);
+		}
+		else{
+			result="0"+result.substring(1);
 		}
 		return result;
 	}
@@ -678,7 +718,9 @@ public class ALU {
 	 */
 	public static String integerDivision (String operand1, String operand2, int length) {
 		// TODO YOUR CODE HERE.
-		
+		char a=operand1.charAt(0);
+		char b=operand2.charAt(0);
+		//符号拓展
 		while(operand1.length()<2*length){
 			operand1=operand1.substring(0, 1)+operand1;
 		}
@@ -686,109 +728,209 @@ public class ALU {
 			operand2=operand2.substring(0, 1)+operand2;
 		}
 		//补全   X.length=2*length
-		String X=operand1;
-		String Y=operand2;
-		String R1="0";
-		String[] R=new String[length];
-		int mid=Integer.valueOf(integerTrueValue(operand2));
-		mid*=(-1);
-		String FY=integerRepresentation(String.valueOf(mid),length);//FY是 -Y的补码
 		
-		if(operand1.charAt(0)==Y.charAt(0)){//同号
-			R1=adder(X.substring(0, length),FY,'0',length).substring(1)+X.substring(length,2*length);
-		}
-		else{//不同号
-			R1=adder(X.substring(0, length),Y,'0',length).substring(1)+X.substring(length,2*length);
-		}
-		if(R1.charAt(0)==Y.charAt(0)){//R1与Y同号  ，Qn置1
-			R1+="1";
+		if(Integer.valueOf(operand2)==0){
+			return "NaN";
 		}
 		else{
-			R1+="0";
-		}//Qn
-		R[0]=R1.substring(1);
-		int flag=0;
-		boolean w=false;
-		for(int i=1;i<=length-1;i++){
-			if(R[i-1].endsWith("1")){//上一个是同号   接下来做减法
-				String temporary=adder(R[i-1].substring(0, length),FY,'0',length).substring(1)+R[i-1].substring(length,2*length);
-				if(temporary.charAt(0)==Y.charAt(0)){
-					temporary+="1";
-					temporary=temporary.substring(1);
-					R[i]=temporary;
-				}
-				else{
-					temporary+="0";
-					temporary=temporary.substring(1);
-					R[i]=temporary;
-				}
-			}
-			else{
-				String temporary=adder(R[i-1].substring(0, length),Y,'0',length).substring(1)+R[i-1].substring(length,2*length);
-				if(temporary.charAt(0)==Y.charAt(0)){
-					temporary+="1";
-					temporary=temporary.substring(1);
-					R[i]=temporary;
-				}
-				else{
-					temporary+="0";
-					temporary=temporary.substring(1);
-					R[i]=temporary;
-				}
-			}
-			if(Integer.valueOf(R[i].substring(0, 2*length-7))==0){//yu shu已经为0;
-				flag=i;
-				w=true;
-				break;
-			}
-		}//还差最后一次
-		String temporary="",Shang=R[flag].substring(length,2*length);
-		temporary=R[flag].substring(0, length);
-		for(int i=0;i<length-flag;i++){
-			Shang=Shang+"0";
-		}
-		Shang="0"+Shang.substring(Shang.length()-length,Shang.length());
-		
-		if(w==false){
-			Shang="";
-			if(R[length-1].endsWith("1")){
-				temporary=adder(R[length-1].substring(0, length),FY,'0',length).substring(1);
-			}
-			else{
-				temporary=adder(R[length-1].substring(0, length),Y,'0',length).substring(1);
+			String X=operand1;
+			String Y=operand2;
+			String R1="0";
+			String[] R=new String[length];
+			int mid=Integer.valueOf(integerTrueValue(operand2));
+			mid=-mid;
+			String FY=integerRepresentation(""+mid,length);//FY是 -Y的补码
+			while(FY.length()<length){
+				FY=FY.substring(0, 1)+FY;
 			}
 			
-			if(temporary.startsWith("0")){
-				Shang=(R[length-1].substring(length,2*length)+"1").substring(1);
+			if(operand1.charAt(0)==Y.charAt(0)){//XY同号做减法  求第一位Shang
+				R1=myAdderJinWei(X.substring(0, length),FY,length).substring(1)+X.substring(length,2*length);
+			}
+			else{//不同号
+				R1=myAdderJinWei(X.substring(0, length),Y,length).substring(1)+X.substring(length,2*length);
+			}
+			if(R1.charAt(0)==Y.charAt(0)){//R1与Y同号  ，Q(length-1)置1   Q(length-1)~Q0
+				R1+="1";
 			}
 			else{
-				Shang=(R[length-1].substring(length,2*length)+"0").substring(1);
+				R1+="0";
+			}//Qn
+			R[0]=R1.substring(1);
+			for(int i=1;i<=length-1;i++){
+				if(R[i-1].endsWith("1")){//上一个是同号   接下来做减法
+					String temporary=adder(R[i-1].substring(0, length),FY,'0',length).substring(1)+R[i-1].substring(length,2*length);
+					if(temporary.charAt(0)==Y.charAt(0)){
+						temporary+="1";
+						temporary=temporary.substring(1);
+						R[i]=temporary;
+					}
+					else{
+						temporary+="0";
+						temporary=temporary.substring(1);
+						R[i]=temporary;
+					}
+				}
+				else{
+					String temporary=adder(R[i-1].substring(0, length),Y,'0',length).substring(1)+R[i-1].substring(length,2*length);
+					if(temporary.charAt(0)==Y.charAt(0)){
+						temporary+="1";
+						temporary=temporary.substring(1);
+						R[i]=temporary;
+					}
+					else{
+						temporary+="0";
+						temporary=temporary.substring(1);
+						R[i]=temporary;
+					}
+				}
+				
+				
+			/*	if(Integer.valueOf(R[i].substring(0, 2*length-7))==0){//yu shu已经为0;
+					flag=i;
+					w=true;
+					break;
+				}*/
+				
+				
+			}//还差最后一次
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			//商的修正
+			
+			String myYu=R[length-1].substring(0, length);
+			if(R[length-1].endsWith("1")){
+				myYu=myAdderJinWei(myYu,FY,length).substring(1);
 			}
-			//shang
-			if(Integer.valueOf(temporary)!=0){
-				if(X.charAt(0)!=Y.charAt(0)){
-					Shang=adder(Shang,"001",'0',length);
+			else{
+				myYu=myAdderJinWei(myYu,Y,length).substring(1);
+			}
+			char Last=myYu.charAt(0);
+			String rrrr="";
+			if(Last==b){
+				rrrr="1";
+			}
+			else{
+				rrrr="0";
+			}
+			
+			String myShang=R[length-1].substring(length, 2*length).substring(1)+rrrr;
+			if(a!=b){//被除数与除数同号
+				myShang=oneAdder(myShang).substring(1);
+			}
+			//余数的修正
+			
+			
+			
+			
+			
+			if(myYu.charAt(0)!=a){//余数符号bu同被除数符号
+				if(a==b){
+					myYu=myAdderJinWei(myYu,Y,length).substring(1);
+				}
+				else{
+					myYu=myAdderJinWei(myYu,FY,length).substring(1);
+				}
+			}
+			
+			
+			/*if(Integer.valueOf(R[length-1].substring(0,length))==0){//余数寄存器为0
+				myShang=R[length-1].substring(length+1,2*length)+rrrr;
+				
+				myYu="0";
+				while(myYu.length()<length){
+					myYu="0";
+				}
+				
+			}*/
+			
+			return "0"+myShang+myYu;
+			
+			
+			
+			
+		/*	
+			String temporary="",Shang=R[flag].substring(length,2*length);
+			temporary=R[flag].substring(0, length);
+			for(int i=0;i<length-flag;i++){
+				Shang=Shang+"0";
+			}
+			Shang="0"+Shang.substring(Shang.length()-length,Shang.length());
+			
+			if(w==false){
+				Shang="";
+				if(R[length-1].endsWith("1")){
+					temporary=adder(R[length-1].substring(0, length),FY,'0',length).substring(1);
+				}
+				else{
+					temporary=adder(R[length-1].substring(0, length),Y,'0',length).substring(1);
+				}
+				
+				if(temporary.startsWith("0")){
+					Shang=(R[length-1].substring(length,2*length)+"1").substring(1);
+				}
+				else{
+					Shang=(R[length-1].substring(length,2*length)+"0").substring(1);
+				}
+				//shang
+				if(Integer.valueOf(temporary)!=0){
+					if(X.charAt(0)!=Y.charAt(0)){
+						Shang=adder(Shang,"001",'0',length);
+					}
+					else{
+						Shang="0"+Shang;
+					}
+					//yu shu
+					if(temporary.charAt(0)!=X.charAt(0)){
+						if(X.charAt(0)==Y.charAt(0)){
+							temporary=adder(temporary,Y,'0',length).substring(1);
+						}
+						else{
+							temporary=adder(temporary,FY,'0',length).substring(1);
+						}
+					}
 				}
 				else{
 					Shang="0"+Shang;
 				}
-				//yu shu
-				if(temporary.charAt(0)!=X.charAt(0)){
-					if(X.charAt(0)==Y.charAt(0)){
-						temporary=adder(temporary,Y,'0',length).substring(1);
-					}
-					else{
-						temporary=adder(temporary,FY,'0',length).substring(1);
-					}
-				}
 			}
-			else{
-				Shang="0"+Shang;
-			}
+			return Shang+temporary;*/
 		}
-		return Shang+temporary;
+		
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * 带符号整数加法，可以调用{@link #adder(String, String, char, int) adder}等方法，
 	 * 但不能直接将操作数转换为补码后使用{@link #integerAddition(String, String, int) integerAddition}、
@@ -802,29 +944,38 @@ public class ALU {
 	public static String signedAddition (String operand1, String operand2, int length) {
 		// TODO YOUR CODE HERE.
 		String Result="";
-		if(operand1.charAt(0)==operand2.charAt(0)){//同号
-			String result=adder("0"+operand1.substring(1),"0"+operand2.substring(1),'0',length);
+		if(operand1.charAt(0)==operand2.charAt(0)){//同号求和
+			String result="";
+			if(operand1.substring(1).length()<length){
+				result=myAdderJinWei("0"+operand1.substring(1),"0"+operand2.substring(1),length);
+			}
+			else{
+				result=myAdderJinWei(operand1.substring(1),operand2.substring(1),length);
+			}
 			//if()
 			Result=result.substring(0,1)+operand1.charAt(0)+result.substring(1);
 		}
-		else{//异号
-			if(operand1.startsWith("1")){//operand1 为负数
-				operand1=negation(operand1.substring(1));
-				operand1="1"+oneAdder(operand1).substring(1);
-				String result=adder(operand1,operand2.substring(1),'0',length);
-				Result=result.substring(0,1)+result.substring(1, 2)+result.substring(1);
+		else{//异号求差
+			int prefix=operand1.charAt(0)-48;
+			String x=operand2;
+			x=oneAdder(negation(operand2.substring(1))).substring(1);
+			String result=myAdderJinWei(operand1.substring(1),x,length);
+			if(result.charAt(0)=='1'){
+				Result="0"+prefix+result.substring(1);
 			}
-			else if(operand2.startsWith("1")){
-				operand2=negation(operand2.substring(1));
-				operand2="1"+oneAdder(operand2).substring(1);
-				String result=adder(operand2,operand1.substring(1),'0',length);
-				Result=result.substring(0,1)+result.substring(1, 2)+result.substring(1);
+			else{
+				if(prefix==0){
+					prefix=1;
+				}
+				else{
+					prefix=0;
+				}
+				Result="0"+prefix+oneAdder(negation(result.substring(1))).substring(1);
 			}
 		}
 		return Result;
 		
 	}
-	
 	
 	
 	
@@ -864,6 +1015,80 @@ public class ALU {
 	 */
 	public String floatAddition (String operand1, String operand2, int eLength, int sLength, int gLength) {
 		// TODO YOUR CODE HERE.
+		//正常的规格化数
+		int max=(int) Math.pow(2, eLength)-1;
+		String Result="0";
+		
+		
+		int Ex=Integer.valueOf(operand1.substring(1,1+eLength),2);
+		int Ey=Integer.valueOf(operand2.substring(1,1+eLength),2);
+		String Mx=operand1.substring(1+eLength,1+eLength+sLength);
+		String My=operand2.substring(1+eLength,1+eLength+sLength);
+		int midE=Ex-Ey;
+		String prefix=operand1.substring(0,1);
+		if(midE>0){
+			String ReserveY=operand2.substring(operand2.length()-midE,operand2.length());//保留右移而丢弃的operand2的倒数midE位
+			My=logRightShift("1"+My.substring(0,My.length()-1),midE-1);//My的隐藏位为0
+			String Msum="";
+			if(operand1.charAt(0)==operand2.charAt(0)){
+				Msum=integerAddition(Mx,My,sLength);
+				if(Msum.startsWith("1")){//需要右移
+					Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1
+					Ex++;
+				}
+				else if(Msum.startsWith("0")){//没有溢出 可能需要左移
+					Msum=Msum.substring(1);//隐藏位1
+				}
+				String ExtoBi=Integer.toBinaryString(Ex);
+				ExtoBi=ExtoBi.substring(ExtoBi.length()-eLength,ExtoBi.length());
+				//判断阶码是否溢出
+				if(Ex>=max||Ex<=0){
+					Result="1";
+				}
+				Result=Result+prefix+ExtoBi+Msum;
+			}
+
+			else if(operand1.charAt(0)!=operand2.charAt(0)){//取My的补码   不考虑隐藏位的话，最后别忘了两个数的小数点前都是1??????????
+				My=negation(My);
+				My=oneAdder(My);
+				My=My.substring(1);
+				Msum=integerAddition(Mx,My,sLength);
+				if(Msum.startsWith("0")){
+					
+				}
+			}
+			
+			
+			
+			
+		
+		}
+		
+		if(operand1.charAt(0)==operand2.charAt(0)){//同号  作加法
+			
+			
+			if(midE<0){//将 两个操作数交换了位置
+				midE=-midE;
+				int temp;
+				String Temp;
+				temp=Ex;
+				Ex=Ey;
+				Ey=temp;
+				Temp=Mx;
+				Mx=My;
+				My=Temp;
+			}
+			
+		//}
+			
+	    }
+		else if(operand1.charAt(0)!=operand2.charAt(0)){//异号作减法
+			
+		}
+		
+		
+		
+		
 		
 		return null;
 	}
