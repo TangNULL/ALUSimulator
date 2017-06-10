@@ -13,7 +13,7 @@ public class ALU {
 	 * @param length 二进制补码表示的长度
 	 * @return number的二进制补码表示，长度为length
 	 */
-	public static String integerRepresentation (String number, int length) {
+	public String integerRepresentation (String number, int length) {
 		// TODO YOUR CODE HERE.	
 		boolean isNegative=false;
 		StringBuffer str=new StringBuffer();
@@ -61,7 +61,7 @@ public class ALU {
 	 * @param sLength 尾数的长度，取值大于等于 4
 	 * @return number的二进制表示，长度为 1+eLength+sLength。从左向右，依次为符号、指数（移码表示）、尾数（首位隐藏）
 	 */
-	public static String floatRepresentation (String number, int eLength, int sLength) {
+	public String floatRepresentation (String number, int eLength, int sLength) {
 		// TODO YOUR CODE HERE.
 	
 		String result="0";
@@ -237,7 +237,7 @@ public class ALU {
 	 * @param operand 二进制补码表示的操作数
 	 * @return operand的真值。若为负数；则第一位为“-”；若为正数或 0，则无符号位
 	 */
-	public static String integerTrueValue (String operand) {
+	public String integerTrueValue (String operand) {
 		// TODO YOUR CODE HERE.
 		String result="";
 		if(operand.startsWith("1")){//负数
@@ -261,7 +261,7 @@ public class ALU {
 	 * @param sLength 尾数的长度，取值大于等于 4
 	 * @return operand的真值。若为负数；则第一位为“-”；若为正数或 0，则无符号位。正负无穷分别表示为“+Inf”和“-Inf”， NaN表示为“NaN”
 	 */
-	public static String floatTrueValue (String operand, int eLength, int sLength) {
+	public String floatTrueValue (String operand, int eLength, int sLength) {
 		// TODO YOUR CODE HERE.
 		String result="";
 		if(operand.startsWith("1")){
@@ -324,7 +324,7 @@ public class ALU {
 	 * @param operand 二进制表示的操作数
 	 * @return operand按位取反的结果
 	 */
-	public static String negation (String operand) {
+	public String negation (String operand) {
 		String str="";
 		char[] myChar=operand.toCharArray();
 		for(int i=0;i<myChar.length;i++){
@@ -368,7 +368,7 @@ public class ALU {
 	 * @param n 左移的位数
 	 * @return operand左移n位的结果
 	 */
-	public static String leftShift (String operand, int n) {
+	public String leftShift (String operand, int n) {
 		// TODO YOUR CODE HERE.
 		
 		int length=operand.length();
@@ -393,7 +393,7 @@ public class ALU {
 	 * @param n 右移的位数
 	 * @return operand逻辑右移n位的结果
 	 */
-	public static String logRightShift (String operand, int n) {
+	public String logRightShift (String operand, int n) {
 		// TODO YOUR CODE HERE.
 		int length=operand.length();
 		for(int i=0;i<n;i++){
@@ -411,7 +411,7 @@ public class ALU {
 	 * @param n 右移的位数
 	 * @return operand算术右移n位的结果
 	 */
-	public static String ariRightShift (String operand, int n) {
+	public String ariRightShift (String operand, int n) {
 		// TODO YOUR CODE HERE.
 		int length=operand.length();
 		if(operand.startsWith("1")){//负数
@@ -436,7 +436,7 @@ public class ALU {
 	 * @param c 低位对当前位的进位，取0或1
 	 * @return 相加的结果，用长度为2的字符串表示，第1位表示进位，第2位表示和
 	 */
-	public static String fullAdder (char x, char y, char c) {
+	public String fullAdder (char x, char y, char c) {
 		// TODO YOUR CODE HERE.
 		char m,n;    //m表示进位，n表示和
 		if(x=='1'&&y=='1'){
@@ -475,7 +475,7 @@ public class ALU {
 	 * @param c 低位对当前位的进位，取0或1
 	 * @return 长度为5的字符串表示的计算结果，其中第1位是最高位进位，后4位是相加结果，其中进位不可以由循环获得
 	 */
-	public static String claAdder (String operand1, String operand2, char c) {
+	public String claAdder (String operand1, String operand2, char c) {
 		// TODO YOUR CODE HERE.
 		char[] Operand1=operand1.toCharArray();
 		char[] Operand2=operand2.toCharArray();
@@ -503,7 +503,7 @@ public class ALU {
 	 * @param operand 二进制补码表示的操作数
 	 * @return operand加1的结果，长度为operand的长度加1，其中第1位指示是否溢出（溢出为1，否则为0），其余位为相加结果
 	 */
-	public static String oneAdder (String operand) {
+	public String oneAdder (String operand) {
 		// TODO YOUR CODE HERE.
 		char[] myChar=operand.toCharArray();
 		int Cin=0,Cout=0,k=1;
@@ -540,7 +540,7 @@ public class ALU {
 	 * @param length 存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度，当某个操作数的长度小于length时，需要在高位补符号位
 	 * @return 长度为length+1的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相加结果
 	 */
-	public static String adder (String operand1, String operand2, char c, int length) {
+	public String adder (String operand1, String operand2, char c, int length) {
 		// TODO YOUR CODE HERE.
 		/*
 		if(operand1.length()<length&&operand2.length()==length){
@@ -599,7 +599,7 @@ public class ALU {
 		return result;
 	}
 
-	public static String myAdderJinWei(String operand1, String operand2, int length){
+	public String myAdderJinWei(String operand1, String operand2, int length){
 		
 		while(operand1.length()<length){
 			operand1=operand1.substring(0, 1)+operand1;
@@ -632,7 +632,7 @@ public class ALU {
 	 * @param length 存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度，当某个操作数的长度小于length时，需要在高位补符号位
 	 * @return 长度为length+1的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相加结果
 	 */
-	public static String integerAddition (String operand1, String operand2, int length) {
+	public String integerAddition (String operand1, String operand2, int length) {
 		// TODO YOUR CODE HERE.
 		String result=adder(operand1, operand2,'0',length);
 		return result;
@@ -646,7 +646,7 @@ public class ALU {
 	 * @param length 存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度，当某个操作数的长度小于length时，需要在高位补符号位
 	 * @return 长度为length+1的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相减结果
 	 */
-	public static String integerSubtraction (String operand1, String operand2, int length) {
+	public String integerSubtraction (String operand1, String operand2, int length) {
 		// TODO YOUR CODE HERE.
 		String result="";
 		int op2=Integer.valueOf(integerTrueValue(operand2));
@@ -668,7 +668,7 @@ public class ALU {
 	 * @param length 存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度，当某个操作数的长度小于length时，需要在高位补符号位
 	 * @return 长度为length+1的字符串表示的相乘结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相乘结果
 	 */
-	public static String integerMultiplication (String operand1, String operand2, int length) {
+	public String integerMultiplication (String operand1, String operand2, int length) {
 		// TODO YOUR CODE HERE.
 		char a=operand1.charAt(0);
 		char b=operand2.charAt(0);
@@ -716,7 +716,7 @@ public class ALU {
 	 * @param length 存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度，当某个操作数的长度小于length时，需要在高位补符号位
 	 * @return 长度为2*length+1的字符串表示的相除结果，其中第1位指示是否溢出（溢出为1，否则为0），其后length位为商，最后length位为余数
 	 */
-	public static String integerDivision (String operand1, String operand2, int length) {
+	public String integerDivision (String operand1, String operand2, int length) {
 		// TODO YOUR CODE HERE.
 		char a=operand1.charAt(0);
 		char b=operand2.charAt(0);
@@ -849,7 +849,7 @@ public class ALU {
 	 * @param length 存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度（不包含符号），当某个操作数的长度小于length时，需要将其长度扩展到length
 	 * @return 长度为length+2的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），第2位为符号位，后length位是相加结果
 	 */
-	public static String signedAddition (String operand1, String operand2, int length) {
+	public String signedAddition (String operand1, String operand2, int length) {
 		// TODO YOUR CODE HERE.
 		String Result="";
 		if(operand1.charAt(0)==operand2.charAt(0)){//同号求和
@@ -884,16 +884,7 @@ public class ALU {
 		return Result;
 		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	/**
 	 * 浮点数加法，可调用{@link #signedAddition(String, String, int) signedAddition}等方法实现。<br/>
 	 * 例：floatAddition("00111111010100000", "00111111001000000", 8, 8, 8)
@@ -947,18 +938,43 @@ public class ALU {
 
 			else if(operand1.charAt(0)!=operand2.charAt(0)){//取My的补码   不考虑隐藏位的话，最后别忘了两个数的小数点前都是1??????????
 				My=negation("0"+My);
-				My=oneAdder(My).substring(1);
+				My=oneAdder(My);
+				String JinWei="";
+				if(Integer.valueOf(My)==0){
+					JinWei="1";
+				}
+				///////////  0.0000 > 1.1111 > (1)0.0000   然后 1.0000+0.0000=0.0000表示没有进位，但是那个取反加一时的进位被忽略了，导致后来的结果的符号不对
+				
+			    My=My.substring(1);
 				char Yprefix=My.charAt(0);
 				My=My.substring(1);
 				Msum=myAdderJinWei(Mx,My,sLength);
-				if(Msum.startsWith("0")){   //   X=1.****  Y=Yprefix.****
-					if(Yprefix=='1'){  //10.*****  需右移  产生进位
-						Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+				if(Msum.startsWith("0")){   //   X=1.****  Y=Yprefix.****   Msum=0.****
+					if(Yprefix=='1'){  //10.*****  需右移  产生进位 
+						int i=1;
+						while(Msum.charAt(i)!='1'){
+							i++;
+						}// i表示1的位置   0123456   左移i位
+						Ex=Ex-i;
+						if(ReserveY.length()<i){
+							Msum=Msum.substring(i+1)+ReserveY;
+							while(Msum.length()<sLength){
+								Msum+="0";
+							}
+						}
+						else{
+							Msum=Msum.substring(i+1)+ReserveY.substring(0,i);	
+						}
+						//Msum省略位为1
+						String ExtoBi=integerRepresentation(""+Ex,eLength);
+						Result+=Deprefix+ExtoBi+Msum;
+						
+						/*Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
 						Ex++;
 						String ExtoBi=integerRepresentation(""+Ex,eLength);
-						Result+=prefix+ExtoBi+Msum;
+						Result+=prefix+ExtoBi+Msum;*/
 					}
-					else{ //无进位  需对结果求补   1.****
+					else{ //无进位  需对结果求补   1.**** +0.****=1.****
 						Msum=oneAdder(negation("1"+Msum.substring(1))).substring(1);
 						if(Msum.startsWith("0")){//需左移  ReserveY 要上场啦      现在的Msum长的是这样的 0.*******    要找到小数点后面的第一个1
 							int i=1;
@@ -982,21 +998,46 @@ public class ALU {
 						else{//Msum长这样 1.******   不需要左移右移
 							Msum=Msum.substring(1);
 							String ExtoBi=integerRepresentation(""+Ex,eLength);
-							Result+=Deprefix+ExtoBi+Msum;
+							if(JinWei=="1"){
+								Result+=prefix+ExtoBi+Msum;
+							}
+							else{
+								Result+=Deprefix+ExtoBi+Msum;
+							}
+							
 						}
 					}
 				}
 				
 				else{//必然有进位  所以无需取反操作啦
 					if(Yprefix=='0'){// 10.******   右移   Msum现在有  sLength+1 位
-						Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+						int i=1;
+						while(Msum.charAt(i)!='1'){
+							i++;
+						}// i表示1的位置   0123456   左移i位
+						Ex=Ex-i;
+						if(ReserveY.length()<i){
+							Msum=Msum.substring(i+1)+ReserveY;
+							while(Msum.length()<sLength){
+								Msum+="0";
+							}
+						}
+						else{
+							Msum=Msum.substring(i+1)+ReserveY.substring(0,i);	
+						}
+						//Msum省略位为1
+						String ExtoBi=integerRepresentation(""+Ex,eLength);
+						Result+=Deprefix+ExtoBi+Msum;
+						
+						/*Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
 						Ex++;
 						String ExtoBi=integerRepresentation(""+Ex,eLength);
-						Result+=prefix+ExtoBi+Msum;
+						Result+=prefix+ExtoBi+Msum;*/
 					}
-					else{  //  11.*******
-						Msum="1"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
-						Ex++;
+					else{  //  11.****
+						Msum=Msum.substring(1);
+						/*Msum="1"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+						Ex++;*/
 						String ExtoBi=integerRepresentation(""+Ex,eLength);
 						Result+=prefix+ExtoBi+Msum;
 					}
@@ -1032,13 +1073,33 @@ public class ALU {
 			}
 			else if(operand1.charAt(0)!=operand2.charAt(0)){//取My的补码   不考虑隐藏位的话，最后别忘了两个数的小数点前都是1?? 0.****+ 本来My=1.****
 				My=negation("1"+My);
-				My=oneAdder(My).substring(1);  // *.****
+				My=oneAdder(My);
+				String JinWei="";
+				if(Integer.valueOf(My)==0){
+					JinWei="1";
+				}
+				My=My.substring(1);  // *.****
 				char Yprefix=My.charAt(0);
 				My=My.substring(1);
 				Msum=myAdderJinWei(Mx,My,sLength);  //  ****+****=*.****     0.****+ Yprefix.****
 				if(Msum.startsWith("1")&&Yprefix=='1'){   //10.****   需右移  产生进位
-					Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
-					Ey++;
+					int i=1;
+					while(Msum.charAt(i)!='1'){
+						i++;
+					}// i表示1的位置   0123456   左移i位
+					Ey=Ey-i;
+					if(ReserveX.length()<i){
+						Msum=Msum.substring(i+1)+ReserveX;
+						while(Msum.length()<sLength){
+							Msum+="0";
+						}
+					}
+					else{
+						Msum=Msum.substring(i+1)+ReserveX.substring(0,i);	
+					}
+					//Msum省略位为1
+					/*Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+					Ey++;*/
 					String EytoBi=integerRepresentation(""+Ey,eLength);
 					Result+=prefix+EytoBi+Msum;
 				}
@@ -1061,7 +1122,13 @@ public class ALU {
 						}
 						//Msum省略位为1
 						String EytoBi=integerRepresentation(""+Ey,eLength);
-						Result+=Deprefix+EytoBi+Msum;
+						if((Msum.startsWith("0")&&Yprefix=='1')&&JinWei=="1"){
+							Result+=prefix+EytoBi+Msum;
+						}
+						else{
+							Result+=Deprefix+EytoBi+Msum;
+						}
+						
 					}
 					else{//Msum长这样 1.******   不需要左移右移
 						Msum=Msum.substring(1);
@@ -1149,21 +1216,41 @@ public class ALU {
 			    }
 				//必然有进位
 				else if(Msum.startsWith("1")&&Yprefix=='1'){   //  11.****  右移
-					Msum="1"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
-					Ey++;
+					Msum=Msum.substring(1);
+					/*Msum="1"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+					Ey++;*/
 					String EytoBi=integerRepresentation(""+Ey,eLength);
 					Result+=prefix+EytoBi+Msum;
 				}
 				else{  //  10.****  右移
-					Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
-					Ey++;
+					boolean isOne=false;
+					int i=1;
+					while(Msum.charAt(i)!='1'&&i<=Msum.length()-2){
+						i++;
+					}
+					if(Msum.charAt(i)=='1'){
+						isOne=true;
+					}// i表示1的位置   0123456   左移i位
+					if(isOne==true){
+						Ey=Ey-i;
+					}
+					else{
+						Ey=0;
+					}
+					Msum=Msum.substring(i+1);
+					while(Msum.length()<sLength){
+						Msum+="0";
+					}
+					/*Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+					Ey++;*/
 					String EytoBi=integerRepresentation(""+Ey,eLength);
 					Result+=prefix+EytoBi+Msum;
 				}
 	    	}
 		}
-		
-		
+		if(Ex>=max||Ey>=max){
+			Result="1"+Result.substring(1);
+		}
 		return Result;
 	}
 	
@@ -1179,8 +1266,25 @@ public class ALU {
 	 */
 	public String floatSubtraction (String operand1, String operand2, int eLength, int sLength, int gLength) {
 		// TODO YOUR CODE HERE.
-		return null;
+		if(operand2.startsWith("1")){ //   -（-**）
+			operand2="0"+operand2.substring(1);
+			String Result=floatAddition(operand1,operand2,eLength,sLength,gLength);
+			return Result;
+		}
+		else{ //   -(****)
+			operand2="1"+operand2.substring(1);
+			String Result=floatAddition(operand1,operand2,eLength,sLength,gLength);
+			return Result;
+		}
+		
 	}
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * 浮点数乘法，可调用{@link #integerMultiplication(String, String, int) integerMultiplication}等方法实现。<br/>
@@ -1193,6 +1297,7 @@ public class ALU {
 	 */
 	public String floatMultiplication (String operand1, String operand2, int eLength, int sLength) {
 		// TODO YOUR CODE HERE.
+		
 		return null;
 	}
 	
