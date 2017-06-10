@@ -894,23 +894,6 @@ public class ALU {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * 浮点数加法，可调用{@link #signedAddition(String, String, int) signedAddition}等方法实现。<br/>
 	 * 例：floatAddition("00111111010100000", "00111111001000000", 8, 8, 8)
@@ -926,16 +909,22 @@ public class ALU {
 		//正常的规格化数
 		int max=(int) Math.pow(2, eLength)-1;  //相当于255
 		String Result="0";
-		
-		
 		int Ex=Integer.valueOf(operand1.substring(1,1+eLength),2);
 		int Ey=Integer.valueOf(operand2.substring(1,1+eLength),2);
 		String Mx=operand1.substring(1+eLength,1+eLength+sLength);
 		String My=operand2.substring(1+eLength,1+eLength+sLength);
 		int midE=Ex-Ey;
 		String prefix=operand1.substring(0,1);
+		String Deprefix="";
+		if(prefix.equals("0")){
+			Deprefix="1";
+		}
+		else{
+			Deprefix="0";
+		}
 		if(midE>0){  //右移Y
 			String ReserveY=operand2.substring(operand2.length()-midE,operand2.length());//保留右移而丢弃的operand2的倒数midE位
+			ReserveY=ReserveY.substring(0,gLength);  //保护位
 			My=logRightShift("1"+My.substring(0,My.length()-1),midE-1);//My的隐藏位为0
 			String Msum="";
 			if(operand1.charAt(0)==operand2.charAt(0)){//同加  
@@ -947,8 +936,8 @@ public class ALU {
 				else if(Msum.startsWith("0")){//没有溢出 可能需要左移???
 					Msum=Msum.substring(1);//隐藏位1
 				}
-				String ExtoBi=Integer.toBinaryString(Ex);
-				ExtoBi=ExtoBi.substring(ExtoBi.length()-eLength,ExtoBi.length());
+				String ExtoBi=integerRepresentation(""+Ex,eLength);
+			//	ExtoBi=ExtoBi.substring(ExtoBi.length()-eLength,ExtoBi.length());
 				//判断阶码是否溢出
 				if(Ex>=max||Ex<=0){
 					Result="1";
@@ -957,48 +946,225 @@ public class ALU {
 			}
 
 			else if(operand1.charAt(0)!=operand2.charAt(0)){//取My的补码   不考虑隐藏位的话，最后别忘了两个数的小数点前都是1??????????
-				My=negation(My);
-				My=oneAdder(My);
-				My=My.substring(1);  //My的补码  
-				Msum=integerAddition(Mx,My,sLength);
-				if(Msum.startsWith("0")){
-					
+				My=negation("0"+My);
+				My=oneAdder(My).substring(1);
+				char Yprefix=My.charAt(0);
+				My=My.substring(1);
+				Msum=myAdderJinWei(Mx,My,sLength);
+				if(Msum.startsWith("0")){   //   X=1.****  Y=Yprefix.****
+					if(Yprefix=='1'){  //10.*****  需右移  产生进位
+						Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+						Ex++;
+						String ExtoBi=integerRepresentation(""+Ex,eLength);
+						Result+=prefix+ExtoBi+Msum;
+					}
+					else{ //无进位  需对结果求补   1.****
+						Msum=oneAdder(negation("1"+Msum.substring(1))).substring(1);
+						if(Msum.startsWith("0")){//需左移  ReserveY 要上场啦      现在的Msum长的是这样的 0.*******    要找到小数点后面的第一个1
+							int i=1;
+							while(Msum.charAt(i)!='1'){
+								i++;
+							}// i表示1的位置   0123456   左移i位
+							Ex=Ex-i;
+							if(ReserveY.length()<i){
+								Msum=Msum.substring(i+1)+ReserveY;
+								while(Msum.length()<sLength){
+									Msum+="0";
+								}
+							}
+							else{
+								Msum=Msum.substring(i+1)+ReserveY.substring(0,i);	
+							}
+							//Msum省略位为1
+							String ExtoBi=integerRepresentation(""+Ex,eLength);
+							Result+=Deprefix+ExtoBi+Msum;
+						}
+						else{//Msum长这样 1.******   不需要左移右移
+							Msum=Msum.substring(1);
+							String ExtoBi=integerRepresentation(""+Ex,eLength);
+							Result+=Deprefix+ExtoBi+Msum;
+						}
+					}
+				}
+				
+				else{//必然有进位  所以无需取反操作啦
+					if(Yprefix=='0'){// 10.******   右移   Msum现在有  sLength+1 位
+						Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+						Ex++;
+						String ExtoBi=integerRepresentation(""+Ex,eLength);
+						Result+=prefix+ExtoBi+Msum;
+					}
+					else{  //  11.*******
+						Msum="1"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+						Ex++;
+						String ExtoBi=integerRepresentation(""+Ex,eLength);
+						Result+=prefix+ExtoBi+Msum;
+					}
 				}
 			}
-			
-			
-			
-			
-		
 		}
 		
-		if(operand1.charAt(0)==operand2.charAt(0)){//同号  作加法
-			
-			
-			if(midE<0){//将 两个操作数交换了位置
-				midE=-midE;
-				int temp;
-				String Temp;
-				temp=Ex;
-				Ex=Ey;
-				Ey=temp;
-				Temp=Mx;
-				Mx=My;
-				My=Temp;
+		
+		
+		else if(midE<0){//右移X    以Ey位基准
+			midE=-midE;
+			String ReserveX=operand1.substring(operand1.length()-midE,operand1.length());//保留右移而丢弃的operand1的倒数midE位
+			if(ReserveX.length()>gLength){
+				ReserveX=ReserveX.substring(0,gLength);  //保护位
+			}
+			Mx=logRightShift("1"+Mx.substring(0,Mx.length()-1),midE-1);//Mx的隐藏位为0    0.****   My=1.****
+			String Msum="";
+			if(operand1.charAt(0)==operand2.charAt(0)){//同加  
+				Msum=myAdderJinWei(Mx,My,sLength);
+				if(Msum.startsWith("1")){//需要右移
+					Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1
+					Ey++;
+				}
+				else if(Msum.startsWith("0")){//没有溢出 可能需要左移???
+					Msum=Msum.substring(1);//隐藏位1
+				}
+				String EytoBi=integerRepresentation(""+Ey,eLength);
+				//判断阶码是否溢出
+				if(Ey>=max||Ey<=0){
+					Result="1";
+				}
+				Result+=prefix+EytoBi+Msum;
+			}
+			else if(operand1.charAt(0)!=operand2.charAt(0)){//取My的补码   不考虑隐藏位的话，最后别忘了两个数的小数点前都是1?? 0.****+ 本来My=1.****
+				My=negation("1"+My);
+				My=oneAdder(My).substring(1);  // *.****
+				char Yprefix=My.charAt(0);
+				My=My.substring(1);
+				Msum=myAdderJinWei(Mx,My,sLength);  //  ****+****=*.****     0.****+ Yprefix.****
+				if(Msum.startsWith("1")&&Yprefix=='1'){   //10.****   需右移  产生进位
+					Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+					Ey++;
+					String EytoBi=integerRepresentation(""+Ey,eLength);
+					Result+=prefix+EytoBi+Msum;
+				}
+				else if((Msum.startsWith("0")&&Yprefix=='1')||(Msum.startsWith("1")&&Yprefix=='0')){  //  1.**** 无进位  需求补
+					Msum=oneAdder(negation("1"+Msum.substring(1))).substring(1);
+					if(Msum.startsWith("0")){//需左移  ReserveX 要上场啦      现在的Msum长的是这样的 0.****    要找到小数点后面的第一个1
+						int i=1;
+						while(Msum.charAt(i)!='1'){
+							i++;
+						}// i表示1的位置   0123456   左移i位
+						Ey=Ey-i;
+						if(ReserveX.length()<i){
+							Msum=Msum.substring(i+1)+ReserveX;
+							while(Msum.length()<sLength){
+								Msum+="0";
+							}
+						}
+						else{
+							Msum=Msum.substring(i+1)+ReserveX.substring(0,i);	
+						}
+						//Msum省略位为1
+						String EytoBi=integerRepresentation(""+Ey,eLength);
+						Result+=Deprefix+EytoBi+Msum;
+					}
+					else{//Msum长这样 1.******   不需要左移右移
+						Msum=Msum.substring(1);
+						String EytoBi=integerRepresentation(""+Ey,eLength);
+						Result+=Deprefix+EytoBi+Msum;
+					}
+				}
+				else if(Msum.startsWith("0")&&Yprefix=='0'){   //0.****   无进位 需求补
+					Msum=oneAdder(negation("0"+Msum.substring(1))).substring(1);
+					if(Msum.startsWith("0")){//需左移  ReserveX 要上场啦      现在的Msum长的是这样的 0.****    要找到小数点后面的第一个1
+						int i=1;
+						while(Msum.charAt(i)!='1'){
+							i++;
+						}// i表示1的位置   0123456   左移i位
+						Ey=Ey-i;
+						if(ReserveX.length()<i){
+							Msum=Msum.substring(i+1)+ReserveX;
+							while(Msum.length()<sLength){
+								Msum+="0";
+							}
+						}
+						else{
+							Msum=Msum.substring(i+1)+ReserveX.substring(0,i);	
+						}
+						//Msum省略位为1
+						String EytoBi=integerRepresentation(""+Ey,eLength);
+						Result+=Deprefix+EytoBi+Msum;
+					}
+					else{  //Msum长这样 1.******   不需要左移右移
+						Msum=Msum.substring(1);
+						String EytoBi=integerRepresentation(""+Ey,eLength);
+						Result+=Deprefix+EytoBi+Msum;
+					}
+				}
+			}
+		}
+		
+		else  if(midE==0){  //无需对阶   1.****   +  1.****
+			String Msum="";
+			if(operand1.charAt(0)==operand2.charAt(0)){ //同加  
+				Msum=myAdderJinWei(Mx,My,sLength);
+				if(Msum.startsWith("1")){//需要右移  11.****
+					Msum="1"+Msum.substring(1, Msum.length()-1);//省略隐藏位1
+					Ey++;
+				}
+				else if(Msum.startsWith("0")){//  10.****
+					Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1
+					Ey++;
+				}
+				String EytoBi=integerRepresentation(""+Ey,eLength);
+				//判断阶码是否溢出
+				if(Ey>=max||Ey<=0){
+					Result="1";
+				}
+				Result+=prefix+EytoBi+Msum;
 			}
 			
-		//}
-			
-	    }
-		else if(operand1.charAt(0)!=operand2.charAt(0)){//异号作减法
-			
+			else{
+				My=negation("1"+My);
+				My=oneAdder(My).substring(1);  // Yprefix.****
+				char Yprefix=My.charAt(0);
+				My=My.substring(1); //****
+				Msum=myAdderJinWei(Mx,My,sLength);  //  ****+****=*.****     1.****+ Yprefix.****
+				if(Msum.startsWith("0")&&Yprefix=='0'){   //1.****   无进位 需求补
+					Msum=oneAdder(negation("1"+Msum.substring(1))).substring(1);
+					if(Msum.startsWith("0")){//需左移   现在的Msum长的是这样的 0.****    要找到小数点后面的第一个1
+						int i=1;
+						while(Msum.charAt(i)!='1'){
+							i++;
+						}// i表示1的位置   0123456   左移i位
+						Ey=Ey-i;
+						Msum=Msum.substring(i+1);
+						while(Msum.length()<sLength){
+							Msum+="0";
+						}
+						//Msum省略位为1
+						String EytoBi=integerRepresentation(""+Ey,eLength);
+						Result+=Deprefix+EytoBi+Msum;
+					}
+					else{  //Msum长这样 1.******   不需要左移右移
+						Msum=Msum.substring(1);
+						String EytoBi=integerRepresentation(""+Ey,eLength);
+						Result+=Deprefix+EytoBi+Msum;
+					}
+			    }
+				//必然有进位
+				else if(Msum.startsWith("1")&&Yprefix=='1'){   //  11.****  右移
+					Msum="1"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+					Ey++;
+					String EytoBi=integerRepresentation(""+Ey,eLength);
+					Result+=prefix+EytoBi+Msum;
+				}
+				else{  //  10.****  右移
+					Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1   结果符号位取被加数符号   prefix
+					Ey++;
+					String EytoBi=integerRepresentation(""+Ey,eLength);
+					Result+=prefix+EytoBi+Msum;
+				}
+	    	}
 		}
 		
 		
-		
-		
-		
-		return null;
+		return Result;
 	}
 	
 	/**
