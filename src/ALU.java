@@ -784,153 +784,61 @@ public class ALU {
 						R[i]=temporary;
 					}
 				}
-				
-				
-			/*	if(Integer.valueOf(R[i].substring(0, 2*length-7))==0){//yu shu已经为0;
-					flag=i;
-					w=true;
-					break;
-				}*/
-				
-				
 			}//还差最后一次
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+			if(a=='1'&&b=='0'){
+				String myShang="",myYu="0";
+				if(Integer.valueOf(R[length-1].substring(0,length))==0){//余数寄存器为0
+					myShang=R[length-1].substring(length+1,2*length)+"0";///////有问题
+				
+					myYu="0";
+					while(myYu.length()<length){
+						myYu="0"+myYu;
+					}
+				
+				}
+				return "0"+myShang+myYu;
+			}
 			
 			
 			//商的修正
-			
-			String myYu=R[length-1].substring(0, length);
-			if(R[length-1].endsWith("1")){
-				myYu=myAdderJinWei(myYu,FY,length).substring(1);
-			}
 			else{
-				myYu=myAdderJinWei(myYu,Y,length).substring(1);
-			}
-			char Last=myYu.charAt(0);
-			String rrrr="";
-			if(Last==b){
-				rrrr="1";
-			}
-			else{
-				rrrr="0";
-			}
-			
-			String myShang=R[length-1].substring(length, 2*length).substring(1)+rrrr;
-			if(a!=b){//被除数与除数同号
-				myShang=oneAdder(myShang).substring(1);
-			}
-			//余数的修正
-			
-			
-			
-			
-			
-			if(myYu.charAt(0)!=a){//余数符号bu同被除数符号
-				if(a==b){
-					myYu=myAdderJinWei(myYu,Y,length).substring(1);
-				}
-				else{
+				String myYu=R[length-1].substring(0, length);
+				if(R[length-1].endsWith("1")){
 					myYu=myAdderJinWei(myYu,FY,length).substring(1);
 				}
-			}
-			
-			
-			/*if(Integer.valueOf(R[length-1].substring(0,length))==0){//余数寄存器为0
-				myShang=R[length-1].substring(length+1,2*length)+rrrr;
-				
-				myYu="0";
-				while(myYu.length()<length){
-					myYu="0";
+				else{
+					myYu=myAdderJinWei(myYu,Y,length).substring(1);
 				}
-				
-			}*/
-			
-			return "0"+myShang+myYu;
-			
-			
-			
-			
-		/*	
-			String temporary="",Shang=R[flag].substring(length,2*length);
-			temporary=R[flag].substring(0, length);
-			for(int i=0;i<length-flag;i++){
-				Shang=Shang+"0";
-			}
-			Shang="0"+Shang.substring(Shang.length()-length,Shang.length());
-			
-			if(w==false){
-				Shang="";
-				if(R[length-1].endsWith("1")){
-					temporary=adder(R[length-1].substring(0, length),FY,'0',length).substring(1);
+				char Last=myYu.charAt(0);
+				String rrrr="";
+				if(Last==b){
+					rrrr="1";
 				}
 				else{
-					temporary=adder(R[length-1].substring(0, length),Y,'0',length).substring(1);
+					rrrr="0";
 				}
 				
-				if(temporary.startsWith("0")){
-					Shang=(R[length-1].substring(length,2*length)+"1").substring(1);
+				String myShang=R[length-1].substring(length, 2*length).substring(1)+rrrr;
+				if(a!=b){//被除数与除数同号
+					myShang=oneAdder(myShang).substring(1);
 				}
-				else{
-					Shang=(R[length-1].substring(length,2*length)+"0").substring(1);
-				}
-				//shang
-				if(Integer.valueOf(temporary)!=0){
-					if(X.charAt(0)!=Y.charAt(0)){
-						Shang=adder(Shang,"001",'0',length);
+				//余数的修正
+				
+				if(myYu.charAt(0)!=a){//余数符号bu同于被除数符号
+					if(a==b){
+						myYu=myAdderJinWei(myYu,Y,length).substring(1);
 					}
 					else{
-						Shang="0"+Shang;
-					}
-					//yu shu
-					if(temporary.charAt(0)!=X.charAt(0)){
-						if(X.charAt(0)==Y.charAt(0)){
-							temporary=adder(temporary,Y,'0',length).substring(1);
-						}
-						else{
-							temporary=adder(temporary,FY,'0',length).substring(1);
-						}
+						myYu=myAdderJinWei(myYu,FY,length).substring(1);
 					}
 				}
-				else{
-					Shang="0"+Shang;
-				}
+				return "0"+myShang+myYu;
 			}
-			return Shang+temporary;*/
 		}
 		
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * 带符号整数加法，可以调用{@link #adder(String, String, char, int) adder}等方法，
 	 * 但不能直接将操作数转换为补码后使用{@link #integerAddition(String, String, int) integerAddition}、
@@ -1016,7 +924,7 @@ public class ALU {
 	public String floatAddition (String operand1, String operand2, int eLength, int sLength, int gLength) {
 		// TODO YOUR CODE HERE.
 		//正常的规格化数
-		int max=(int) Math.pow(2, eLength)-1;
+		int max=(int) Math.pow(2, eLength)-1;  //相当于255
 		String Result="0";
 		
 		
@@ -1026,17 +934,17 @@ public class ALU {
 		String My=operand2.substring(1+eLength,1+eLength+sLength);
 		int midE=Ex-Ey;
 		String prefix=operand1.substring(0,1);
-		if(midE>0){
+		if(midE>0){  //右移Y
 			String ReserveY=operand2.substring(operand2.length()-midE,operand2.length());//保留右移而丢弃的operand2的倒数midE位
 			My=logRightShift("1"+My.substring(0,My.length()-1),midE-1);//My的隐藏位为0
 			String Msum="";
-			if(operand1.charAt(0)==operand2.charAt(0)){
-				Msum=integerAddition(Mx,My,sLength);
+			if(operand1.charAt(0)==operand2.charAt(0)){//同加  
+				Msum=myAdderJinWei(Mx,My,sLength);
 				if(Msum.startsWith("1")){//需要右移
 					Msum="0"+Msum.substring(1, Msum.length()-1);//省略隐藏位1
 					Ex++;
 				}
-				else if(Msum.startsWith("0")){//没有溢出 可能需要左移
+				else if(Msum.startsWith("0")){//没有溢出 可能需要左移???
 					Msum=Msum.substring(1);//隐藏位1
 				}
 				String ExtoBi=Integer.toBinaryString(Ex);
@@ -1051,7 +959,7 @@ public class ALU {
 			else if(operand1.charAt(0)!=operand2.charAt(0)){//取My的补码   不考虑隐藏位的话，最后别忘了两个数的小数点前都是1??????????
 				My=negation(My);
 				My=oneAdder(My);
-				My=My.substring(1);
+				My=My.substring(1);  //My的补码  
 				Msum=integerAddition(Mx,My,sLength);
 				if(Msum.startsWith("0")){
 					

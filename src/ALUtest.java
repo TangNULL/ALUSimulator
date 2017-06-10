@@ -131,7 +131,7 @@ public class ALUtest {
 		assertEquals("00000010000000000", ALU.integerDivision("01000", "00010", 8));
 		assertEquals("00000010000000001", ALU.integerDivision("01001", "00010", 8));
 		assertEquals("00000000100000001", ALU.integerDivision("011", "00010", 8));*/
-		assertEquals("000010001", ALU.integerDivision("0100", "0011",4));
+		assertEquals("011100000", ALU.integerDivision("1010", "0011", 4));
 	}
 
 	@Test
