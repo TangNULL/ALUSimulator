@@ -1279,13 +1279,6 @@ public class ALU {
 		
 	}
 	
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * 浮点数乘法，可调用{@link #integerMultiplication(String, String, int) integerMultiplication}等方法实现。<br/>
 	 * 例：floatMultiplication("00111110111000000", "00111111000000000", 8, 8)
@@ -1297,8 +1290,48 @@ public class ALU {
 	 */
 	public String floatMultiplication (String operand1, String operand2, int eLength, int sLength) {
 		// TODO YOUR CODE HERE.
-		
-		return null;
+		int max=(int)Math.pow(2, eLength)-1;
+		String Result="0";
+		int Ex=Integer.valueOf("0"+operand1.substring(1,1+eLength),2);
+		int Ey=Integer.valueOf("0"+operand2.substring(1,1+eLength),2);
+		String Mx=operand1.substring(1+eLength,1+eLength+sLength);
+		String My=operand2.substring(1+eLength,1+eLength+sLength);
+		int mx=Integer.valueOf(Mx);
+		int my=Integer.valueOf(My);
+		int SumE=-1;
+		if((Ex==0&&mx==0)||(Ey==0&&my==0)){
+			while(Result.length()<2+eLength+sLength){
+				Result+="0";
+			}
+		}
+		else{
+			String prefix="";
+			String M="";
+			if(operand1.charAt(0)==operand2.charAt(0)){
+				prefix="0";
+			}
+			else{
+				prefix="1";
+			}
+			//算阶码
+			SumE=Ex+Ey-((int)Math.pow(2, eLength-1)-1);
+			String Mul=integerMultiplication("01"+Mx,"01"+My,(sLength+4)*2);  //得到 溢出位+ 3*sLength 
+			Mul=Mul.charAt(0)+Mul.charAt(sLength)+Mul.substring(Mul.length()-2*sLength,Mul.length()-sLength);
+			if(Mul.startsWith("1")){ //右移一位
+				SumE++;
+				M=Mul.substring(1, 1+sLength);
+			}
+			else{
+				M=Mul.substring(2);
+			}
+			String E=integerRepresentation(""+SumE,eLength);
+			Result+=prefix+E+M;
+			
+		}
+		if(SumE>=max){
+			Result="1"+Result.substring(1);
+		}
+		return Result;
 	}
 	
 	/**
@@ -1312,6 +1345,64 @@ public class ALU {
 	 */
 	public String floatDivision (String operand1, String operand2, int eLength, int sLength) {
 		// TODO YOUR CODE HERE.
-		return null;
+		int max=(int)Math.pow(2, eLength)-1;
+		String Result="0";
+		int Ex=Integer.valueOf("0"+operand1.substring(1,1+eLength),2);
+		int Ey=Integer.valueOf("0"+operand2.substring(1,1+eLength),2);
+		String Mx=operand1.substring(1+eLength,1+eLength+sLength);
+		String My=operand2.substring(1+eLength,1+eLength+sLength);
+		int mx=Integer.valueOf(Mx);
+		int my=Integer.valueOf(My);
+		int SumE=-1;
+		if(Ey==0&&my==0){  //除零
+			String E="1";
+			while(E.length()<eLength){
+				E+="1";
+			}
+			String M="0";
+			while(M.length()<sLength){
+				M+="0";
+			}
+			Result="00"+E+M;
+		}
+		else if(Ex==0&&mx==0){
+			String E="0";
+			while(E.length()<eLength){
+				E+="0";
+			}
+			String M="0";
+			while(M.length()<sLength){
+				M+="0";
+			}
+			Result="00"+E+M;
+		}
+		else{
+			String prefix="";
+			String M="";
+			if(operand1.charAt(0)==operand2.charAt(0)){
+				prefix="0";
+			}
+			else{
+				prefix="1";
+			}
+			//算阶码
+			SumE=Ex-Ey+((int)Math.pow(2, eLength-1)-1);
+			M=integerDivision("01"+Mx,"01"+My,sLength+4);
+			char re=M.charAt(M.length()-sLength-1);
+			M=M.substring(M.length()-sLength,M.length());
+			/*if(M.startsWith("1")){
+				M=M.substring(1);
+			}
+			if(M.startsWith("0")&&re=='0'){
+				M=M.substring(1)+"0";
+				SumE--;
+			}*/
+			String E=integerRepresentation(""+SumE,eLength);
+			Result+=prefix+E+M;
+		}
+		if(SumE>=max){
+			Result="1"+Result.substring(1);
+		}
+		return Result;
 	}
 }
